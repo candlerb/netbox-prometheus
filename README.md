@@ -137,23 +137,29 @@ Node Exporter:
 ```
   - job_name: node
     scrape_interval: 1m
-    scrape_timeout: 50s
     file_sd_configs:
       - files:
         - /etc/prometheus/targets.d/node_targets.yml
     metrics_path: /metrics
     relabel_configs:
+      # When __address__ consists of just a name or IP address,
+      # copy it to the "instance" label.  Doing this explicitly
+      # keeps the port number out of the instance label.
       - source_labels: [__address__]
-        regex: '([^/]+)'  # name or address only
+        regex: '([^/]+)'
         target_label: instance
+      # When __address__ is of the form "name/address", extract
+      # name to "instance" label and address to "__address__"
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'  # name/address
+        regex: '(.+)/(.+)'
         target_label: instance
         replacement: '${1}'
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'  # name/address
+        regex: '(.+)/(.+)'
         target_label: __address__
         replacement: '${2}'
+      # Append port number to __address__ so that scrape gets
+      # sent to the right port
       - source_labels: [__address__]
         target_label: __address__
         replacement: '${1}:9100'
@@ -166,34 +172,43 @@ cannot contain square brackets around IPv6 addresses.
 
 ```
   - job_name: snmp
-    scrape_interval: 15s
+    scrape_interval: 1m
     file_sd_configs:
       - files:
         - /etc/prometheus/targets.d/snmp_targets.yml
     metrics_path: /snmp
     relabel_configs:
+      # When __address__ consists of just a name or IP address,
+      # copy it to both the "instance" label (visible to user)
+      # and "__param_target" (where snmp_exporter sends SNMP)
       - source_labels: [__address__]
-        regex: '([^/]+)'  # name or address only
+        regex: '([^/]+)'
         target_label: instance
       - source_labels: [__address__]
-        regex: '([^/]+)'  # name or address only
+        regex: '([^/]+)'
         target_label: __param_target
+      # When __address__ is of the form "name/address", extract
+      # name to "instance" label and address to "__param_target"
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'  # name/address
+        regex: '(.+)/(.+)'
         target_label: instance
         replacement: '${1}'
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'  # name/address
+        regex: '(.+)/(.+)'
         target_label: __param_target
         replacement: '${2}'
+      # If __param_target is enclosed by square brackets, remove them
       - source_labels: [__param_target]
-        regex: '\[(.+)\]'   # remove [...] from address
+        regex: '\[(.+)\]'
         target_label: __param_target
         replacement: '${1}'
+      # Copy "module" label to "__param_module" so that snmp_exporter
+      # receives it as part of the scrape URL
       - source_labels: [module]
         target_label: __param_module
+      # Send the actual scrape to SNMP exporter
       - target_label: __address__
-        replacement: 127.0.0.1:9116  # SNMP exporter
+        replacement: 127.0.0.1:9116
 ```
 
 Reload prometheus config and check there are no errors:
