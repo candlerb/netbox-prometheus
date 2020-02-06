@@ -218,6 +218,12 @@ killall -HUP prometheus
 journalctl -eu prometheus
 ```
 
+See also:
+
+* https://www.robustperception.io/controlling-the-instance-label
+* https://www.robustperception.io/target-labels-are-for-life-not-just-for-christmas/
+* https://www.robustperception.io/reloading-prometheus-configuration
+
 ### Metadata
 
 In order to use the metadata metrics, you'll need to expose them using http
@@ -248,6 +254,7 @@ You can modify the python code to add extra labels, e.g. "platform".
 
 See also:
 
+* [How to have labels for machine roles](https://www.robustperception.io/how-to-have-labels-for-machine-roles)
 * [Exposing the software version to prometheus](https://www.robustperception.io/exposing-the-software-version-to-prometheus)
 * [Many-to-one and one-to-one vector matches](https://prometheus.io/docs/prometheus/latest/querying/operators/#many-to-one-and-one-to-many-vector-matches)
 
