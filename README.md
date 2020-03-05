@@ -148,6 +148,7 @@ Node Exporter:
       - source_labels: [__address__]
         regex: '([^/]+)'
         target_label: instance
+
       # When __address__ is of the form "name/address", extract
       # name to "instance" label and address to "__address__"
       - source_labels: [__address__]
@@ -158,6 +159,7 @@ Node Exporter:
         regex: '(.+)/(.+)'
         target_label: __address__
         replacement: '${2}'
+
       # Append port number to __address__ so that scrape gets
       # sent to the right port
       - source_labels: [__address__]
@@ -187,6 +189,7 @@ cannot contain square brackets around IPv6 addresses.
       - source_labels: [__address__]
         regex: '([^/]+)'
         target_label: __param_target
+
       # When __address__ is of the form "name/address", extract
       # name to "instance" label and address to "__param_target"
       - source_labels: [__address__]
@@ -197,15 +200,18 @@ cannot contain square brackets around IPv6 addresses.
         regex: '(.+)/(.+)'
         target_label: __param_target
         replacement: '${2}'
+
       # If __param_target is enclosed by square brackets, remove them
       - source_labels: [__param_target]
         regex: '\[(.+)\]'
         target_label: __param_target
         replacement: '${1}'
+
       # Copy "module" label to "__param_module" so that snmp_exporter
       # receives it as part of the scrape URL
       - source_labels: [module]
         target_label: __param_module
+
       # Send the actual scrape to SNMP exporter
       - target_label: __address__
         replacement: 127.0.0.1:9116
