@@ -57,7 +57,7 @@ class ConfigBuilder:
         if cluster:
             self.metrics[metric_key]["cluster"] = cluster.name # cluster has no slug
         for tag in item.tags:
-            self.metrics[metric_key]["tags_"+tag] = "1"
+            self.metrics[metric_key]["tags_"+str(tag)] = "1"
 
     def add_targets(self, items, filename, labels={}):
         """Add a target once"""
