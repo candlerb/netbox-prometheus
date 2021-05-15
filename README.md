@@ -18,6 +18,9 @@ the Netbox database.  Example:
   - gw/192.168.1.1
 ```
 
+It writes separate files for each type of target: `node_targets.yml`,
+`snmp_targets.yml`, `wmi_targets.yml`.
+
 It also generates synthetic metrics which can be used for
 [machine role queries](https://www.robustperception.io/how-to-have-labels-for-machine-roles)
 and to add extra labels to alerts:
@@ -56,18 +59,24 @@ communicate with Netbox REST API.
 
 In your Netbox instance:
 
-* Add tag "prometheus" onto each of the site(s) where you have things to to poll
+* Add tag "prometheus" onto each of the site(s) where you have things to to poll (*)
 * Add tag "prom_node" to each Linux device/VM that you want to poll
 * Add tag "prom_wmi" to each Windows device/VM that you want to poll
 * Add tag "prom_snmp" to each network device that you want to poll
+* Ensure that each device or VM that you want to poll has a primary IP
+  address assigned, and has status "Active"
 
 Note: the script *requires* all those tags to exist, even if there are no
 devices with them, because the Netbox API gives an error if you try to query
 non-existent tags.
 
-If you don't need `prom_wmi` or `prom_snmp`, then either create an unused
-tag in Netbox (add it to a device then remove it again), or comment out the
-relevant lines in the script.
+Therefore if you don't need `prom_wmi` or `prom_snmp`, you still need to
+create an unused tag in Netbox (prior to v2.9.0 you had to add it to a
+device then remove it again), or else comment out the relevant lines in the
+script.
+
+(*) To scrape Virtual Machines, the *cluster* must be associated with a
+site, and that site must have the label "prometheus".
 
 ### Configuration contexts
 
@@ -83,6 +92,8 @@ called "snmp_mibs" containing the default MIB to poll.
 ```
 
 Override this on other devices which need to use a different mib.
+
+## Script setup
 
 ### Create the output directories
 
