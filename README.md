@@ -63,8 +63,8 @@ In your Netbox instance:
 * Add tag "prom_node" to each Linux device/VM that you want to poll
 * Add tag "prom_windows" to each Windows device/VM that you want to poll
 * Add tag "prom_snmp" to each network device that you want to poll
-* Ensure that each device or VM that you want to poll has a primary IP
-  address assigned, and has status "Active"
+* Ensure that each device or VM that you want to poll has status "Active",
+  and either has a primary IP address assigned, or its name is resolvable
 
 Note: the script *requires* all those tags to exist, even if there are no
 devices with them, because the Netbox API gives an error if you try to query
