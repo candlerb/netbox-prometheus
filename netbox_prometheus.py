@@ -139,7 +139,7 @@ if __name__ == "__main__":
         filter={
             "site_id": [s.id for s in nb.dcim.sites.filter(tag=SITE_TAG)],
             # This changed in 2.7: https://github.com/netbox-community/netbox/issues/3569
-            "status": "active",  # "status: 1,
+            "status": "active",  # "status": 1,
         },
     )
     builder.build()
