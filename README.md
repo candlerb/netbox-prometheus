@@ -19,7 +19,7 @@ the Netbox database.  Example:
 ```
 
 It writes separate files for each type of target: `node_targets.yml`,
-`snmp_targets.yml`, `wmi_targets.yml`.
+`snmp_targets.yml`, `windows_targets.yml`.
 
 It also generates synthetic metrics which can be used for
 [machine role queries](https://www.robustperception.io/how-to-have-labels-for-machine-roles)
@@ -61,7 +61,7 @@ In your Netbox instance:
 
 * Add tag "prometheus" onto each of the site(s) where you have things to to poll (*)
 * Add tag "prom_node" to each Linux device/VM that you want to poll
-* Add tag "prom_wmi" to each Windows device/VM that you want to poll
+* Add tag "prom_windows" to each Windows device/VM that you want to poll
 * Add tag "prom_snmp" to each network device that you want to poll
 * Ensure that each device or VM that you want to poll has a primary IP
   address assigned, and has status "Active"
@@ -70,7 +70,7 @@ Note: the script *requires* all those tags to exist, even if there are no
 devices with them, because the Netbox API gives an error if you try to query
 non-existent tags.
 
-Therefore if you don't need `prom_wmi` or `prom_snmp`, you still need to
+Therefore if you don't need `prom_windows` or `prom_snmp`, you still need to
 create an unused tag in Netbox (prior to v2.9.0 you had to add it to a
 device then remove it again), or else comment out the relevant lines in the
 script.
@@ -178,7 +178,8 @@ Node Exporter:
         replacement: '${1}:9100'
 ```
 
-WMI exporter is similar.
+Windows exporter is similar (just change the job_name, the filename, and the
+replacement port number to 9182).
 
 SNMP exporter is slightly trickier because the target parameter
 cannot contain square brackets around IPv6 addresses.

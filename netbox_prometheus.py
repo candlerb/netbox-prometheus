@@ -85,8 +85,8 @@ class ConfigBuilder:
         self.add_targets(self.nb.virtualization.virtual_machines.filter(tag="prom_node", **self.filter), "node_targets.yml")
         self.add_targets_ctx(self.nb.dcim.devices.filter(tag="prom_snmp", **self.filter), "snmp_targets.yml", "snmp_mibs", "module")
         # Not bothering with VMs for SNMP
-        self.add_targets(self.nb.dcim.devices.filter(tag="prom_wmi", **self.filter), "wmi_targets.yml")
-        self.add_targets(self.nb.virtualization.virtual_machines.filter(tag="prom_wmi", **self.filter), "wmi_targets.yml")
+        self.add_targets(self.nb.dcim.devices.filter(tag="prom_windows", **self.filter), "windows_targets.yml")
+        self.add_targets(self.nb.virtualization.virtual_machines.filter(tag="prom_windows", **self.filter), "windows_targets.yml")
         # TODO: blackbox_targets: should this be on Device/VM or on IPAddress object?
 
     def replace_file(self, filename, content):
