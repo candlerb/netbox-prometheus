@@ -124,8 +124,8 @@ class ConfigBuilder:
         self.replace_file(filename, content)
 
 if __name__ == "__main__":
-    API_URL = "https://netbox.example.net"
-    API_TOKEN = "XXXXXXXX"
+    API_URL = os.getenv('NETBOX_URL', "https://netbox.example.net")
+    API_TOKEN = os.getenv('API_TOKEN', "XXXXXXXX")
     SITE_TAG = "prometheus"  # we will poll devices in all sites with this tag
     DIR = "/etc/prometheus/targets.d"
     METRICS = "/var/www/html/metrics/netbox"
@@ -134,6 +134,9 @@ if __name__ == "__main__":
     #METRICS = "/tmp/netbox.prom"
 
     nb = pynetbox.api(API_URL, token=API_TOKEN)
+    # Wether or not to validate the TLS certificate of API_URL
+    nb.http_session.verify = True
+
     builder = ConfigBuilder(
         nb=nb,
         filter={

@@ -299,3 +299,25 @@ SITE_TAG = "prometheus2"
 Then in Netbox, tag sites A, B and C with "prometheus1", and sites A, D and
 E with "prometheus2".  The correct targets will be generated for each
 prometheus instance.
+
+# Docker Support
+
+If run Prometheus in Docker or have Docker running locally. The `Dockerfile`  included should make it quicker to get started.
+
+## Building the image
+```
+docker build -t netbox-promethus .
+```
+
+## Running the container
+```
+docker run -d -p 80:80 --name netbox-promethus -e NETBOX_URL="https://netbox.example.net" -e API_TOKEN="XXXXXXXX"
+```
+
+## Overriding the poll interval
+
+`Poll.sh` contains an `ENV` var `SLEEP_INT` to override the default poll interval of `300` seconds. This is optional, here we are setting it to poll every minute. The default value is `300` seconds.
+
+```
+docker run -d -p 80:80 --name netbox-promethus -e NETBOX_URL="https://netbox.example.net" -e API_TOKEN="XXXXXXXX" -e SLEEP_INT=60 netbox-promethus
+```
