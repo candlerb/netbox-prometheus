@@ -76,22 +76,28 @@ device then remove it again), or else comment out the relevant lines in the
 script.
 
 (*) To scrape Virtual Machines, the *cluster* must be associated with a
-site, and that site must have the label "prometheus".
+site, and that site must have the label "prometheus".  Site Groups are
+currently not tested, but you can adjust the filter yourself if you wish.
 
-### Configuration contexts
+### SNMP configuration
 
-If you have any SNMP devices, create a global default configuration context
-called "snmp_mibs" containing the default MIB to poll.
+If you have any SNMP devices to poll, then you need to create a new custom
+field as follows:
 
-```
-{
-    "snmp_mibs": [
-        "if_mib"
-    ]
-}
-```
+* Type: Selection (or Multiple Selection)
+* Name: `snmp_module`
+* Label: `SNMP Module`
+* Content Types: `DCIM > device` and `Virtualization > virtual machine`
+* Choices: list of SNMP modules as required, e.g. `if_mib,apcups,synology`
+  (these refer to modules in your snmp_exporter `snmp.yml`)
 
-Override this on other devices which need to use a different mib.
+Then select one or more of these choices on each device or VM that you wish
+to poll, as well as setting the `prom_snmp` tag.
+
+(The tag is required to minimise the data returned in the API query; Netbox
+does not yet have
+[custom field filters](https://github.com/netbox-community/netbox/issues/6615)
+such as `cf_snmp_module__empty=0`)
 
 ## Script setup
 

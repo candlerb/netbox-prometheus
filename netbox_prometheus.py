@@ -64,17 +64,21 @@ class ConfigBuilder:
         for item in items:
             self.add_target(item, filename, labels)
 
-    def add_targets_ctx(self, items, filename, context_var, param_name):
-        """Add a target for each value in a given context_var"""
+    def add_targets_cf(self, items, filename, cf_name, param_name):
+        """Add a target for each value in a given custom field"""
         for item in items:
-            cv = item.config_context.get(context_var, [])
+            cf = getattr(item, 'custom_fields')
+            if not cf:
+                print("Item %r: missing or empty custom_fields" % item)
+                continue
+            cv = cf.get(cf_name)
             if not cv:
-                print("Item %r: missing or empty %s" % (item, context_var))
-            else:
-                if not isinstance(cv, list):
-                    cv = [cv]
-                for mod in cv:
-                    self.add_target(item, filename, {param_name: mod})
+                print("Item %r: missing or empty %s" % (item, cf_name))
+                continue
+            if not isinstance(cv, list):
+                cv = [cv]
+            for mod in cv:
+                self.add_target(item, filename, {param_name: mod})
 
     def build(self):
         """
@@ -83,11 +87,11 @@ class ConfigBuilder:
         """
         self.add_targets(self.nb.dcim.devices.filter(tag="prom_node", **self.filter), "node_targets.yml")
         self.add_targets(self.nb.virtualization.virtual_machines.filter(tag="prom_node", **self.filter), "node_targets.yml")
-        self.add_targets_ctx(self.nb.dcim.devices.filter(tag="prom_snmp", **self.filter), "snmp_targets.yml", "snmp_mibs", "module")
-        # Not bothering with VMs for SNMP
+        self.add_targets_cf(self.nb.dcim.devices.filter(tag="prom_snmp", **self.filter), "snmp_targets.yml", "snmp_module", "module")
+        self.add_targets_cf(self.nb.virtualization.virtual_machines.filter(tag="prom_snmp", **self.filter), "snmp_targets.yml", "snmp_module", "module")
         self.add_targets(self.nb.dcim.devices.filter(tag="prom_windows", **self.filter), "windows_targets.yml")
         self.add_targets(self.nb.virtualization.virtual_machines.filter(tag="prom_windows", **self.filter), "windows_targets.yml")
-        # TODO: blackbox_targets: should this be on Device/VM or on IPAddress object?
+        # TODO: blackbox_targets: should this be on Device/VM or on IPAddress object? And/or Service?
 
     def replace_file(self, filename, content):
         try:
@@ -126,7 +130,7 @@ class ConfigBuilder:
 if __name__ == "__main__":
     API_URL = "https://netbox.example.net"
     API_TOKEN = "XXXXXXXX"
-    SITE_TAG = "prometheus"  # we will poll devices in all sites with this tag
+    SITE_TAG = "prometheus"  # we will poll devices in all sites with this tag (and VMs in clusters where the cluster's site has this tag)
     DIR = "/etc/prometheus/targets.d"
     METRICS = "/var/www/html/metrics/netbox"
     # Uncomment when testing:
@@ -137,6 +141,7 @@ if __name__ == "__main__":
     builder = ConfigBuilder(
         nb=nb,
         filter={
+            "exclude": "config_context",
             "site_id": [s.id for s in nb.dcim.sites.filter(tag=SITE_TAG)],
             # This changed in 2.7: https://github.com/netbox-community/netbox/issues/3569
             "status": "active",  # "status": 1,
