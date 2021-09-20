@@ -34,7 +34,7 @@ class ConfigBuilder:
             addr = re.sub(r'/\d+$', '', item.primary_ip.address)
             if ":" in addr:
                 addr = "[" + addr + "]"
-            tt.append(item.name + "/" + addr)
+            tt.append(item.name + " " + addr)
         else:
             tt.append(item.name)
 

@@ -9,13 +9,13 @@ the Netbox database.  Example:
     module: if_mib_secret
     netbox_type: device
   targets:
-  - sw1/192.168.1.2
-  - sw2/192.168.1.3
+  - sw1 192.168.1.2
+  - sw2 192.168.1.3
 - labels:
     module: mikrotik_secret
     netbox_type: device
   targets:
-  - gw/192.168.1.1
+  - gw 192.168.1.1
 ```
 
 It writes separate files for each type of target: `node_targets.yml`,
@@ -136,9 +136,9 @@ This script can output targets of the following forms:
 ```
 - foo               # name only
 - x.x.x.x           # IPv4 address only
-- foo/x.x.x.x       # name and IPv4 address
+- foo x.x.x.x       # name and IPv4 address
 - [dead:beef::]     # IPv6 address only
-- foo/[dead:beef::] # name and IPv6 address
+- foo [dead:beef::] # name and IPv6 address
 ```
 
 The IP addresses come from the "primary" IP address defined in Netbox, and
@@ -163,17 +163,17 @@ Node Exporter:
       # copy it to the "instance" label.  Doing this explicitly
       # keeps the port number out of the instance label.
       - source_labels: [__address__]
-        regex: '([^/]+)'
+        regex: '([^ ]+)'
         target_label: instance
 
-      # When __address__ is of the form "name/address", extract
+      # When __address__ is of the form "name address", extract
       # name to "instance" label and address to "__address__"
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'
+        regex: '(.+) (.+)'
         target_label: instance
         replacement: '${1}'
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'
+        regex: '(.+) (.+)'
         target_label: __address__
         replacement: '${2}'
 
@@ -202,20 +202,20 @@ cannot contain square brackets around IPv6 addresses.
       # copy it to both the "instance" label (visible to user)
       # and "__param_target" (where snmp_exporter sends SNMP)
       - source_labels: [__address__]
-        regex: '([^/]+)'
+        regex: '([^ ]+)'
         target_label: instance
       - source_labels: [__address__]
-        regex: '([^/]+)'
+        regex: '([^ ]+)'
         target_label: __param_target
 
-      # When __address__ is of the form "name/address", extract
+      # When __address__ is of the form "name address", extract
       # name to "instance" label and address to "__param_target"
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'
+        regex: '(.+) (.+)'
         target_label: instance
         replacement: '${1}'
       - source_labels: [__address__]
-        regex: '(.+)/(.+)'
+        regex: '(.+) (.+)'
         target_label: __param_target
         replacement: '${2}'
 
