@@ -1,3 +1,9 @@
+# This project is now obsolete
+
+*Use [netbox-plugin-prometheus-sd](https://github.com/FlxPeters/netbox-plugin-prometheus-sd)
+instead, together with Prometheus 2.28.0+ using HTTP SD and target
+relabelling*
+
 # Netbox Prometheus configuration generator
 
 This script generates targets files for prometheus from devices and VMs in
